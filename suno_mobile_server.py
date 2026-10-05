@@ -18,6 +18,12 @@ from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # Importar el motor de descarga y procesamiento de audio
 from suno_downloader import SunoScraper, sanitize_filename
 
@@ -30,7 +36,7 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 
 app = FastAPI(title="Suno AI Mobile & Web Downloader HQ")
 scraper = SunoScraper()
-DOWNLOADS_DIR = os.path.abspath("downloads")
+DOWNLOADS_DIR = os.path.abspath(os.environ.get("DOWNLOADS_DIR", "downloads"))
 os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 
 
@@ -1575,7 +1581,7 @@ async def list_downloaded_files():
 
 def run_server():
     local_ip = get_local_ip()
-    port = 8000
+    port = int(os.environ.get("PORT", 8000))
     mobile_url = f"http://{local_ip}:{port}"
 
     print("\n" + "="*58)

@@ -20,6 +20,12 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.backends import default_backend
 import imageio_ffmpeg
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # Configurar codificación segura para consola en Windows
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     try:
@@ -54,6 +60,13 @@ class SunoScraper:
     def __init__(self, session: Optional[requests.Session] = None):
         self.session = session or requests.Session()
         self.session.headers.update(DEFAULT_HEADERS)
+        cookie = os.environ.get("SUNO_COOKIE")
+        if cookie:
+            self.session.headers["Cookie"] = cookie.strip()
+        token = os.environ.get("SUNO_TOKEN")
+        if token:
+            token = token.strip()
+            self.session.headers["Authorization"] = f"Bearer {token}" if not token.lower().startswith("bearer ") else token
         self.ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
 
     def resolve_share_code(self, share_code: str) -> Optional[str]:

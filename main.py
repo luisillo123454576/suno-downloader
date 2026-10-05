@@ -4,6 +4,13 @@ Punto de entrada para despliegue en la nube (Render, Railway, Hugging Face, etc.
 
 import os
 import uvicorn
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from suno_mobile_server import app
 
 if __name__ == "__main__":
